@@ -6,23 +6,16 @@ import (
 	"to-do-list/backend/api/handlers"
 	"to-do-list/backend/config"
 	"to-do-list/backend/pkg/task"
-	"to-do-list/backend/pkg/timer"
-	"to-do-list/backend/utils/alert"
 
 	"github.com/gorilla/mux"
 )
 
 func main() {
-	cfg, err := config.LoadConfig()
-	if err != nil {
-		panic(fmt.Errorf("failed to load config: %w", err))
-	}
+	cfg := config.LoadConfig()
 
 	taskService := task.NewService()
-	alertService := alert.NewAlertService()
-	timerService := timer.NewService(alertService)
 
-	taskHandler := handlers.NewTaskHandler(taskService, timerService)
+	taskHandler := handlers.NewTaskHandler(taskService)
 
 	router := mux.NewRouter()
 
