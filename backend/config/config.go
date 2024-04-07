@@ -1,7 +1,6 @@
 package config
 
 import (
-	"fmt"
 	"os"
 )
 
@@ -9,7 +8,7 @@ type Config struct {
 	Port string
 }
 
-func LoadConfig() (*Config, error) {
+func LoadConfig() (*Config) {
 	port := os.Getenv("PORT")
 	if port == "" {
 		port = "8080"
@@ -19,13 +18,6 @@ func LoadConfig() (*Config, error) {
 		Port: port,
 	}
 
-	return cfg, validateConfig(cfg)
+	return cfg
 }
 
-func validateConfig(cfg *Config) error {
-	if cfg.Port == "" {
-		return fmt.Errorf("port must be set")
-	}
-
-	return nil
-}

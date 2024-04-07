@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 	"to-do-list/backend/pkg/task"
-	"to-do-list/backend/pkg/timer"
 
 	"github.com/gorilla/mux"
 )
@@ -15,18 +14,17 @@ import (
 // TaskHandler handles HTTP requests related to tasks.
 type TaskHandler struct {
 	taskService  *task.Service
-	timerService *timer.Service
 }
 
 // NewTaskHandler creates a new TaskHandler.
-func NewTaskHandler(taskService *task.Service, timerService *timer.Service) *TaskHandler {
+func NewTaskHandler(taskService *task.Service) *TaskHandler {
 	return &TaskHandler{
 		taskService:  taskService,
-		timerService: timerService,
 	}
 }
 
 // HandleTasks handles requests for creating and listing tasks.
+// this is for when you don't have the ID
 func (h *TaskHandler) HandleTasks(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case http.MethodPost:
@@ -39,6 +37,7 @@ func (h *TaskHandler) HandleTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandleTask handles requests for retrieving, updating, and deleting a task.
+// this is for the one with the ID
 func (h *TaskHandler) HandleTask(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	id := vars["id"]
@@ -85,6 +84,7 @@ func (h *TaskHandler) createTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(task)
+
 }
 
 func (h *TaskHandler) listTasks(w http.ResponseWriter, r *http.Request) {
@@ -133,6 +133,7 @@ func (h *TaskHandler) deleteTask(w http.ResponseWriter, r *http.Request, id stri
 		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
+	
+	w.WriteHeader(http.StatusOK)
 
-	w.WriteHeader(http.StatusNoContent)
 }
