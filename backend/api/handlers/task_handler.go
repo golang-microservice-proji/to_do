@@ -122,6 +122,10 @@ func (h *TaskHandler) updateTask(w http.ResponseWriter, r *http.Request, id stri
 		return
 	}
 
+	// call database update task
+	err = h.taskService.MarkTaskComplete(id, req.Completed)
+	// although the method name is 'MarkTaskComplete', it is used to update the task
+
 	task.Completed = req.Completed
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(task)
