@@ -23,7 +23,8 @@ send a get request to get a list of all tasks in the following format:
         "Completed": true,
         "Deadline": "2024-04-08T04:30:00+05:30"
     }
-]```
+]
+```
 
 
 send a put request to /tasks/[taskID] to update the `Completed` status
@@ -45,7 +46,7 @@ send a put request to /tasks/[taskID] to update the `Completed` status
     "Completed": true,
     "Deadline": "2024-04-08T04:30:00+05:30"
 }
-````
+```
 
 send a delete request to /tasks/[ID] to delete a task. You don't have to put anything in the request body
 
@@ -56,3 +57,5 @@ send a delete request to /tasks/[ID] to delete a task. You don't have to put any
 
 you'll receive a 200 OK as a response
 ```
+````
+
