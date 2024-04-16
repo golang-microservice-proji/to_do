@@ -2,7 +2,7 @@
 
 Send a post request with the following JSON data to make a new task:
 
-```json
+```js
 // endpoint: /tasks
 // method: post
 {
@@ -13,7 +13,7 @@ Send a post request with the following JSON data to make a new task:
 
 send a get request to get a list of all tasks in the following format:
 
-````json
+```js
 // endpoint /tasks
 // method: get
 [
@@ -29,7 +29,7 @@ send a get request to get a list of all tasks in the following format:
 
 send a put request to /tasks/[taskID] to update the `Completed` status
 
-```json
+```js
 // endpoint: /tasks/[taskID]
 // method: put
 // example: http://localhost:8080/tasks/04ee1ba1-869e-406d-a9c4-95053572faf5
@@ -50,12 +50,12 @@ send a put request to /tasks/[taskID] to update the `Completed` status
 
 send a delete request to /tasks/[ID] to delete a task. You don't have to put anything in the request body
 
-```json
+```js
 // endpoint: /tasks/[ID]
 // method: delete
 // example: http://localhost:8080/tasks/04ee1ba1-869e-406d-a9c4-95053572faf5
 
 you'll receive a 200 OK as a response
 ```
-````
+
 
