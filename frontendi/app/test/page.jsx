@@ -1,21 +1,25 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 import { BackgroundGradientAnimation } from "../components/ui/background-gradient-animation.tsx";
-import { HoverEffect } from "../components/ui/car-hover-effect.tsx";
+import {
+  HoverEffect,
+  HoverEffectAddToDo,
+} from "../components/ui/car-hover-effect.tsx";
 
 export default function CardHoverEffectDemo() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    datetime: "",
+    Title: "",
+    Deadline: "",
   });
   const plus = [
     {
-      title: "click to add a new to do item",
-      description: "",
+      Title: "+ add a new to do item",
+      Completed: false,
+      Deadline: "",
     },
   ];
+
   const modalRef = useRef(null);
 
   useEffect(() => {
@@ -46,31 +50,77 @@ export default function CardHoverEffectDemo() {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
+    formData.Deadline += ":00Z";
+
+    // we send the data to the db here
+    const response = await fetch("/api/tasks", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(formData),
+    });
+
+    if (!response.ok) {
+      console.error("Failed to save the data");
+    }
+
     console.log(formData);
-    setProjects([...projects, formData]);
-    console.log(projects);
+
+    // fetch data from backend db here
+    fetch("/api/tasks").then((response) => {
+      response.json().then((data) => {
+        setProjects(data);
+      });
+    });
   };
+
+  const updateTask = async (id) => {
+    const payload = {
+      Completed: true,
+    };
+
+    const response = await fetch(`/api/tasks/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+
+    if (!response.ok) {
+      console.error("Failed to update the data");
+    }
+
+    // fetch data from backend db here
+    fetch("/api/tasks").then((response) => {
+      response.json().then((data) => {
+        setProjects(data);
+      });
+    });
+  };
+
   const [projects, setProjects] = useState([
-    // fetch from db
     {
-      title: "go mini proji",
-      description: "micro-services bull",
-      date: "2021-05-09T10:30",
-    },
-    {
-      title: "os proji",
-      description: "ptree impli? seriously?!!",
-      date: "2021-05-09T10:30",
-    },
-    {
-      title: "cn proji",
-      description: "network network, full network",
-      date: "2021-05-09T10:30",
+      ID: "809cc993-16fc-4b1d-bcdb-e97d9796d422",
+      Title: "Ungibungi",
+      Completed: true,
+      Deadline: "2024-04-08T04:30:00+05:30",
     },
   ]);
+
+  useEffect(() => {
+    // we fetch projects from the db here hehe
+    fetch("/api/tasks").then((response) => {
+      response.json().then((data) => {
+        setProjects(data);
+      });
+    });
+  }, []);
+
   return (
     <div className="">
       <BackgroundGradientAnimation>
@@ -81,12 +131,12 @@ export default function CardHoverEffectDemo() {
           what are you waiting for?
         </div>
         <div className="max-w-6xl mx-auto px-8 z-10">
-          <HoverEffect items={projects} />
+          <HoverEffect items={projects} updateTask={updateTask} />
         </div>
         <div className="max-w-6xl mx-auto px-8 z-10" onClick={toggleModal}>
           {plus.map((item, index) => (
             <div key={index}>
-              <HoverEffect items={plus} />
+              <HoverEffectAddToDo items={plus} />
             </div>
           ))}
         </div>
@@ -98,7 +148,7 @@ export default function CardHoverEffectDemo() {
                 ref={modalRef}
                 className="bg-zinc-950 rounded-md z-50 overflow-y-auto"
               >
-                <div className="max-w-md mx-auto relative overflow-hidden border border-slate-400 border-2 z-10 bg-black p-12 rounded-lg shadow-md before:bg-purple-600 before:rounded-full before:-z-10 before:blur-2xl after:w-32 after:h-32 after:absolute after:bg-sky-400 after:rounded-full after:-z-10 after:blur-3xl after:top-24 after:-right-10">
+                <div className="max-w-md mx-auto relative overflow-hidden border-slate-400 border-2 z-10 bg-black p-12 rounded-lg shadow-md before:bg-purple-600 before:rounded-full before:-z-10 before:blur-2xl after:w-32 after:h-32 after:absolute after:bg-sky-400 after:rounded-full after:-z-10 after:blur-3xl after:top-24 after:-right-10">
                   <h2 className="text-2xl font-bold text-white mb-8">
                     Add new to_do item
                   </h2>
@@ -110,21 +160,8 @@ export default function CardHoverEffectDemo() {
                       <input
                         className="mt-1 p-2 w-full bg-zinc-900 border border-gray-600 rounded-md text-white"
                         type="text"
-                        name="title"
-                        value={formData.title}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="mb-4">
-                      <label className="block text-sm font-medium text-gray-300">
-                        Description
-                      </label>
-                      <input
-                        className="mt-1 p-2 w-full bg-zinc-900 border border-gray-600 rounded-md text-white"
-                        name="description"
-                        id="description"
-                        type="text"
-                        value={formData.description}
+                        name="Title"
+                        value={formData.Title}
                         onChange={handleChange}
                       />
                     </div>
@@ -135,9 +172,9 @@ export default function CardHoverEffectDemo() {
                       <input
                         className="mt-1 p-2 w-full bg-zinc-900 border border-gray-600 rounded-md text-white"
                         type="datetime-local"
-                        name="datetime"
-                        id="datetime"
-                        value={formData.datetime}
+                        name="Deadline"
+                        id="Deadline"
+                        value={formData.Deadline}
                         onChange={handleChange}
                       />
                     </div>

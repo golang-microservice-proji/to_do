@@ -4,22 +4,27 @@ import { useState } from "react";
 
 export const HoverEffect = ({
   items,
+  updateTask,
   className,
 }: {
   items: {
-    title: string;
-    description: string;
-    date: string;
+    ID: string;
+    Title: string;
+    Deadline: string;
+    Completed: boolean;
   }[];
   className?: string;
+  updateTask: (id: string) => Promise<void>;
 }) => {
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   // Function to format datetime to human-readable format
-  const formatDateTime = (dateTimeString) => {
+  const formatDateTime = (dateTimeString: string) => {
     const date = new Date(dateTimeString);
     return date.toLocaleString("en-US");
   };
+
+  items = items.filter((item) => item.Completed == false);
   return (
     <div
       className={cn(
@@ -52,9 +57,76 @@ export const HoverEffect = ({
             )}
           </AnimatePresence>
           <Card>
-            <CardTitle>{item.title}</CardTitle>
-            <CardDescription>{item.description}</CardDescription>
-            <CardDescription>{formatDateTime(item.date)}</CardDescription>
+            <CardTitle>{item.Title}</CardTitle>
+            <CardDescription>{formatDateTime(item.Deadline)}</CardDescription>
+            <CardMarkCompleted updateFunction={() => updateTask(item.ID)} />
+          </Card>
+        </div>
+      ))}
+    </div>
+  );
+};
+
+const CardMarkCompleted = ({
+  updateFunction,
+}: {
+  updateFunction: () => void;
+}) => {
+  return (
+    <button
+      className="mt-3 p-3 bg-gradient-to-r from-purple-400 to-blue-500 hover:from-pink-500 hover:to-purple-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-all duration-500 ease-in-out hover:scale-110 hover:brightness-110 hover:animate-pulse active:animate-bounce "
+      type="submit"
+      onClick={updateFunction}
+    >
+      Mark as completed
+    </button>
+  );
+};
+
+export const HoverEffectAddToDo = ({
+  items,
+  className,
+}: {
+  items: {
+    Title: string;
+  }[];
+  className?: string;
+}) => {
+  let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+
+  return (
+    <div
+      className={cn(
+        "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 py-10",
+        className,
+      )}
+    >
+      {items.map((item, idx) => (
+        <div
+          key={idx}
+          className="relative group block p-2 h-full w-full"
+          onMouseEnter={() => setHoveredIndex(idx)}
+          onMouseLeave={() => setHoveredIndex(null)}
+        >
+          <AnimatePresence>
+            {hoveredIndex === idx && (
+              <motion.span
+                className="absolute inset-0 h-full w-full bg-neutral-200 dark:bg-slate-800/[0.8] block rounded-3xl"
+                layoutId="hoverBackground"
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: 1,
+                  transition: { duration: 0.15 },
+                }}
+                exit={{
+                  opacity: 0,
+                  transition: { duration: 0.15, delay: 0.2 },
+                }}
+              />
+            )}
+          </AnimatePresence>
+          <Card>
+            <CardTitle>{item.Title}</CardTitle>
           </Card>
         </div>
       ))}
@@ -82,6 +154,7 @@ export const Card = ({
     </div>
   );
 };
+
 export const CardTitle = ({
   className,
   children,
@@ -95,6 +168,7 @@ export const CardTitle = ({
     </h4>
   );
 };
+
 export const CardDescription = ({
   className,
   children,
