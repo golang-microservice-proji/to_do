@@ -1,10 +1,10 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import { BackgroundGradientAnimation } from "../components/ui/background-gradient-animation.tsx";
+import { BackgroundGradientAnimation } from ".//components/ui/background-gradient-animation.tsx";
 import {
   HoverEffect,
   HoverEffectAddToDo,
-} from "../components/ui/car-hover-effect.tsx";
+} from ".//components/ui/car-hover-effect.tsx";
 
 export default function CardHoverEffectDemo() {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -43,7 +43,7 @@ export default function CardHoverEffectDemo() {
   };
 
   const handleChange = (e) => {
-    const { name, value } = event.target;
+    const { name, value } = e.target;
     setFormData({
       ...formData,
       [name]: value,
@@ -78,7 +78,24 @@ export default function CardHoverEffectDemo() {
     });
   };
 
+  const deleteTask = async (id) => {
+    console.log("deleting", id);
+    const response = await fetch(`/api/tasks/${id}`, {
+      method: "DELETE",
+    });
+    if (!response.ok) {
+      console.error("Failed to delete the data");
+    }
+    // fetch data from backend db here
+    fetch("/api/tasks").then((response) => {
+      response.json().then((data) => {
+        setProjects(data);
+      });
+    });
+  };
+
   const updateTask = async (id) => {
+    console.log("updating", id);
     const payload = {
       Completed: true,
     };
@@ -99,6 +116,7 @@ export default function CardHoverEffectDemo() {
     fetch("/api/tasks").then((response) => {
       response.json().then((data) => {
         setProjects(data);
+        console.log(data);
       });
     });
   };
@@ -131,7 +149,11 @@ export default function CardHoverEffectDemo() {
           what are you waiting for?
         </div>
         <div className="max-w-6xl mx-auto px-8 z-10">
-          <HoverEffect items={projects} updateTask={updateTask} />
+          <HoverEffect
+            items={projects}
+            updateTask={updateTask}
+            deleteTask={deleteTask}
+          />
         </div>
         <div className="max-w-6xl mx-auto px-8 z-10" onClick={toggleModal}>
           {plus.map((item, index) => (

@@ -5,6 +5,7 @@ import { useState } from "react";
 export const HoverEffect = ({
   items,
   updateTask,
+  deleteTask,
   className,
 }: {
   items: {
@@ -15,6 +16,7 @@ export const HoverEffect = ({
   }[];
   className?: string;
   updateTask: (id: string) => Promise<void>;
+  deleteTask: (id: string) => Promise<void>;
 }) => {
   let [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
@@ -24,7 +26,7 @@ export const HoverEffect = ({
     return date.toLocaleString("en-US");
   };
 
-  items = items.filter((item) => item.Completed == false);
+  //items = items.filter((item) => item.Completed == false);
   return (
     <div
       className={cn(
@@ -59,14 +61,33 @@ export const HoverEffect = ({
           <Card>
             <CardTitle>{item.Title}</CardTitle>
             <CardDescription>{formatDateTime(item.Deadline)}</CardDescription>
-            <CardMarkCompleted updateFunction={() => updateTask(item.ID)} />
+            {!item.Completed ? (
+              <CardMarkCompleted updateFunction={() => updateTask(item.ID)} />
+            ) : (
+              <CardDelete deleteFunction={() => deleteTask(item.ID)} />
+            )}
           </Card>
         </div>
       ))}
     </div>
   );
 };
-
+const CardDelete = ({ deleteFunction }: { deleteFunction: () => void }) => {
+  return (
+    <div className="grid grid-cols-2 pt-5 ">
+      <button className=" mr-2 bg-gradient-to-r from-teal-500 to-green-600 text-white font-bold py-3 px-6 rounded-full shadow-lg transform transition-all duration-500 ease-in-out">
+        Done!
+      </button>
+      <button
+        className="ml-2 inline-block rounded-full border-2 border-rose-500 text-rose-500 hover:border-rose-600 hover:bg-rose-400 hover:bg-opacity-10 hover:text-rose-600 focus:border-rose-700 focus:text-rose-700 active:border-rose-800 active:text-rose-800 dark:border-rose-300 dark:text-rose-300 dark:hover:hover:bg-rose-300 px-4 pb-2 pt-2.5 text-xs font-medium uppercase leading-normal transition duration-150 ease-in-out focus:outline-none focus:ring-0"
+        type="button"
+        onClick={deleteFunction}
+      >
+        Delete
+      </button>
+    </div>
+  );
+};
 const CardMarkCompleted = ({
   updateFunction,
 }: {
